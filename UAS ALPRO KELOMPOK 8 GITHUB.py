@@ -174,6 +174,33 @@ def menu_admin():
             return
         else:
             print("Pilihan tidak valid. Silakan coba lagi!")
+
+# Menu Dokter
+def menu_dokter():
+    while True:
+        print("\n=== Menu Dokter ===")
+        print("1. Tampilkan daftar jadwal pasien berdasarkan hari")
+        print("2. Hapus jadwal konsultasi setelah pasien konsultasi")
+        print("3. Kembali ke menu login")
+
+        choice = input("Masukkan pilihan (1/2/3): ")
+
+        if choice == "1":
+            tampilkan_jadwal_berdasarkan_hari()
+        elif choice == "2":
+            print("Daftar jadwal konsultasi:")
+            for i, jadwal in enumerate(jadwal_konsultasi, start=1):
+                print(f"{i}. {jadwal}")
+            index = int(input("Masukkan nomor jadwal yang ingin dihapus: ")) - 1
+            if 0 <= index < len(jadwal_konsultasi):
+                jadwal_konsultasi.pop(index)
+                print("Jadwal berhasil dihapus.")
+            else:
+                print("Nomor tidak valid.")
+        elif choice == "3":
+            return
+        else:
+            print("Pilihan tidak valid. Silakan coba lagi!")
             
             
             
