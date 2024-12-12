@@ -47,6 +47,46 @@ def login():
     return None
 
 
+def validasi_tanggal():
+    while True:
+        tanggal_input = input("Masukkan tanggal konsultasi (DD-MM-YYYY): ")
+        try:
+            tanggal_obj = datetime.strptime(tanggal_input, "%d-%m-%Y")
+            return tanggal_obj.strftime("%d-%m-%Y")
+        except ValueError:
+            print("Format tanggal salah. Gunakan format DD-MM-YYYY.")
+
+
+def get_hari(tanggal):
+    hari_map = {
+        0: "Senin",
+        1: "Selasa",
+        2: "Rabu",
+        3: "Kamis",
+        4: "Jumat",
+        5: "Sabtu",
+        6: "Minggu"
+    }
+    tanggal_obj = datetime.strptime(tanggal, "%d-%m-%Y")
+    return hari_map[tanggal_obj.weekday()]
+
+
+
+def tampilkan_jadwal_berdasarkan_hari():
+    grouped = {}
+    for jadwal in jadwal_konsultasi:
+        hari = get_hari(jadwal["tanggal"])
+        grouped.setdefault(hari, []).append(f"{jadwal['nama']} - ({jadwal['tanggal']} {jadwal['waktu']})")
+
+    for hari in ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]:
+        print(f"{hari}:")
+        if hari in grouped:
+            for jadwal in grouped[hari]:
+                print(f"- {jadwal}")
+        else:
+            print("- Tidak ada pasien")
+
+
 
 # Menu Pasien
 def menu_pasien():
@@ -67,6 +107,70 @@ def menu_pasien():
             antrean_jadwal_konsultasi.append(nomor_antrean)
             print(f"Nomor antrean janji konsultasi Anda: {nomor_antrean}")
         elif choice == "3":
+            return
+        else:
+            print("Pilihan tidak valid. Silakan coba lagi!")
+
+# Menu Admin
+def menu_admin():
+    while True:
+        print("\n=== Menu Admin ===")
+        print("1. Panggil nomor antrean konsultasi langsung")
+        print("2. Panggil nomor antrean atur janji konsultasi")
+        print("3. Hapus jadwal konsultasi")
+        print("4. Cari jadwal konsultasi berdasarkan nama pasien")
+        print("5. Tampilkan daftar jadwal pasien berdasarkan hari")
+        print("6. Kembali ke menu login")
+
+        choice = input("Masukkan pilihan (1/2/3/4/5/6): ")
+
+        if choice == "1":
+            if antrean_konsultasi_langsung:
+                nomor_antrean = antrean_konsultasi_langsung.popleft()
+                print(f"Memanggil nomor antrean konsultasi langsung: {nomor_antrean}")
+            else:
+                print("Tidak ada antrean konsultasi langsung.")
+        elif choice == "2":
+            if antrean_jadwal_konsultasi:
+                nomor_antrean = antrean_jadwal_konsultasi.popleft()
+                print(f"Memanggil nomor antrean janji konsultasi: {nomor_antrean}")
+                nama = input("Masukkan nama pasien: ")
+                usia = input("Masukkan usia pasien: ")
+                penyakit = input("Masukkan penyakit pasien: ")
+                nomor_telepon = input("Masukkan nomor telepon pasien: ")
+                print("Pilih dokter:")
+                print("1. Dokter Lexa")
+                print("2. Dokter Berliana")
+                dokter_choice = input("Masukkan pilihan (1/2): ")
+                dokter = "Dokter Lexa" if dokter_choice == "1" else "Dokter Berliana"
+                tanggal = validasi_tanggal()
+                waktu = input("Masukkan waktu konsultasi (HH:MM): ")
+                jadwal_konsultasi.append({"nama": nama, "usia": usia, "penyakit": penyakit, "nomor_telepon": nomor_telepon, "dokter": dokter, "tanggal": tanggal, "waktu": waktu})
+                print("Jadwal konsultasi berhasil dibuat.")
+            else:
+                print("Tidak ada antrean janji konsultasi.")
+        elif choice == "3":
+            print("Daftar jadwal konsultasi:")
+            for i, jadwal in enumerate(jadwal_konsultasi, start=1):
+                print(f"{i}. {jadwal}")
+            index = int(input("Masukkan nomor jadwal yang ingin dihapus: ")) - 1
+            if 0 <= index < len(jadwal_konsultasi):
+                jadwal_konsultasi.pop(index)
+                print("Jadwal berhasil dihapus.")
+            else:
+                print("Nomor tidak valid.")
+        elif choice == "4":
+            nama = input("Masukkan nama pasien: ")
+            hasil = [jadwal for jadwal in jadwal_konsultasi if jadwal["nama"].lower() == nama.lower()]
+            if hasil:
+                print("Jadwal konsultasi pasien:")
+                for jadwal in hasil:
+                    print(jadwal)
+            else:
+                print("Jadwal tidak ditemukan.")
+        elif choice == "5":
+            tampilkan_jadwal_berdasarkan_hari()
+        elif choice == "6":
             return
         else:
             print("Pilihan tidak valid. Silakan coba lagi!")
