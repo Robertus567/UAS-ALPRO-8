@@ -117,9 +117,9 @@ def menu_admin():
         print("\n=== Menu Admin ===")
         print("1. Panggil nomor antrean konsultasi langsung")
         print("2. Panggil nomor antrean atur janji konsultasi")
-        print("3. Hapus jadwal konsultasi")
-        print("4. Cari jadwal konsultasi berdasarkan nama pasien")
-        print("5. Tampilkan daftar jadwal pasien berdasarkan hari")
+        print("3. Tampilkan daftar jadwal pasien berdasarkan hari")
+        print("4. Cari jadwal pasien berdasarkan nama")
+        print("5. Edit jadwal konsultasi")
         print("6. Kembali ke menu login")
 
         choice = input("Masukkan pilihan (1/2/3/4/5/6): ")
@@ -150,26 +150,42 @@ def menu_admin():
             else:
                 print("Tidak ada antrean janji konsultasi.")
         elif choice == "3":
-            print("Daftar jadwal konsultasi:")
-            for i, jadwal in enumerate(jadwal_konsultasi, start=1):
-                print(f"{i}. {jadwal}")
-            index = int(input("Masukkan nomor jadwal yang ingin dihapus: ")) - 1
-            if 0 <= index < len(jadwal_konsultasi):
-                jadwal_konsultasi.pop(index)
-                print("Jadwal berhasil dihapus.")
-            else:
-                print("Nomor tidak valid.")
+            tampilkan_jadwal_berdasarkan_hari()
         elif choice == "4":
-            nama = input("Masukkan nama pasien: ")
-            hasil = [jadwal for jadwal in jadwal_konsultasi if jadwal["nama"].lower() == nama.lower()]
-            if hasil:
-                print("Jadwal konsultasi pasien:")
-                for jadwal in hasil:
+            nama = input("Masukkan nama pasien yang dicari: ")
+            ditemukan = [jadwal for jadwal in jadwal_konsultasi if jadwal["nama"].lower() == nama.lower()]
+            if ditemukan:
+                print("Jadwal ditemukan:")
+                for jadwal in ditemukan:
                     print(jadwal)
             else:
                 print("Jadwal tidak ditemukan.")
         elif choice == "5":
-            tampilkan_jadwal_berdasarkan_hari()
+            print("Daftar jadwal konsultasi:")
+            for i, jadwal in enumerate(jadwal_konsultasi, start=1):
+                print(f"{i}. {jadwal}")
+            index = int(input("Masukkan nomor jadwal yang ingin diedit: ")) - 1
+            if 0 <= index < len(jadwal_konsultasi):
+                print("1. Edit tanggal")
+                print("2. Edit waktu")
+                print("3. Hapus jadwal")
+                sub_choice = input("Masukkan pilihan (1/2/3): ")
+
+                if sub_choice == "1":
+                    tanggal_baru = validasi_tanggal()
+                    jadwal_konsultasi[index]["tanggal"] = tanggal_baru
+                    print("Tanggal berhasil diperbarui.")
+                elif sub_choice == "2":
+                    waktu_baru = input("Masukkan waktu baru (HH:MM): ")
+                    jadwal_konsultasi[index]["waktu"] = waktu_baru
+                    print("Waktu berhasil diperbarui.")
+                elif sub_choice == "3":
+                    jadwal_konsultasi.pop(index)
+                    print("Jadwal berhasil dihapus.")
+                else:
+                    print("Pilihan tidak valid.")
+            else:
+                print("Nomor tidak valid.")
         elif choice == "6":
             return
         else:
